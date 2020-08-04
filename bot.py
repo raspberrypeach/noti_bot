@@ -16,18 +16,11 @@ def msg_thd(queue, lock):  # message thread
         queryID, id, contents = telepot.glance(msg, flavor='callback_query')  # 메시지를 수신하면 queryID, id, query내용으로 반환
         print('[msg_thd]수신한 메시지: ', contents, ' 사용자 ID: ', id)
 
-        mlock.acquire()  # critical section
+        lock.acquire()  # critical section
         try:
-            if contents == '!허가':  # 문 열때
-                msgTemp = {'1. sender': id, '2. receiver': Check_user(id), '3. DataType': 'instruction',
-                           '4. DataSize': -1, '5. DataName': -1, '6. description': 'OPEN THE DOOR',
-                           '7. count': Param.DEFAULT_COUNT}
+            if contents == '!등록':  # 등록
 
-                mqueue.put(msgTemp)
-                bot.sendMessage(id, '문을 여는중입니다!')
-                print('[msg_thd]DOOR_OPEN request sent')
-
-            elif contents == '!거부':  # 문 닫을때
+            elif contents == '!최근':  # 최근글
                 bot.sendMessage(id, '거부되었습니다!')
                 print('[msg_thd]DOOR noti rejected')
 
