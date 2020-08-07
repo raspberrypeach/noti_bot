@@ -16,6 +16,7 @@ def msg_thd():  # message thread
         SQL = "SELECT count(*) FROM chatbot.user_info WHERE id IN (%s)"
         sql_dict.execute(SQL, vid)
         data = sql_dict.fetchall()  # user data from DB
+        db.close()
 
         print('COUNT: {0}'.format(data[0]))
 
@@ -38,7 +39,16 @@ def msg_thd():  # message thread
 
                 try:
                     if msg['text'] == '!등록':  # 등록
-                        pass
+                        db = pymysql.connect(host='localhost', port=3306, user='root', passwd='1234', db='smartHome',
+                                             charset='utf8')
+                        sql_dict = db.cursor(pymysql.cursors.DictCursor)
+
+                        # DB execute
+                        sql_insert = 'insert into smartHome.query_table values(%s, %s, %s, %s, %s)'  # SQL
+                        sql_dict.execute(sql_insert, (sql_count, id, msg['text'], c_time, '아직 답변이 등록되지 않았습니다'))
+                        db.commit()
+                        db.close()
+
                     elif msg['text'] == '!삭제': # 삭제
 
                     elif msg['text'] == '!최근글': # 최근글
