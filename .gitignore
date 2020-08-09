@@ -128,5 +128,5 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-.src/database.py
-.src/parameter.py
+src/database.py
+src/parameter.py
