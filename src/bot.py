@@ -2,6 +2,7 @@ import telepot
 import parameter
 import pymysql
 import time
+import feedparser
 
 def msg_thd():  # message thread
     defaultMsg = "공지사항 알리미 입니다.\n공지사항에 새로운글이 업로드되면 알림이 전송됩니다!"  # default message
@@ -9,7 +10,7 @@ def msg_thd():  # message thread
 
     def Check_user(vid):  # DB에 등록된 ID인지 확인합니다.
         # DB connect
-        db = pymysql.connect(host='localhost', port=3306, user='root', passwd='1234', db='smartHome', charset='utf8')
+        db = pymysql.connect(host='localhost', port=3306, user='root', passwd='1234', db='chatbot', charset='utf8')
         sql_dict = db.cursor(pymysql.cursors.DictCursor)
 
         # DB execute
@@ -39,20 +40,31 @@ def msg_thd():  # message thread
 
                 try:
                     if msg['text'] == '!등록':  # 등록
-                        db = pymysql.connect(host='localhost', port=3306, user='root', passwd='1234', db='smartHome',
+                        db = pymysql.connect(host='localhost', port=3306, user='root', passwd='1234', db='chatbot',
                                              charset='utf8')
                         sql_dict = db.cursor(pymysql.cursors.DictCursor)
 
                         # DB execute
-                        sql_insert = 'insert into smartHome.query_table values(%s, %s, %s, %s, %s)'  # SQL
-                        sql_dict.execute(sql_insert, (sql_count, id, msg['text'], c_time, '아직 답변이 등록되지 않았습니다'))
+                        sql_insert = 'insert into chatbot.user_info values(%s, %s)'  # SQL
+                        sql_dict.execute(sql_insert, (id, True))
                         db.commit()
                         db.close()
 
                     elif msg['text'] == '!삭제': # 삭제
+                        db = pymysql.connect(host='localhost', port=3306, user='root', passwd='1234', db='chatbot',
+                                             charset='utf8')
+                        sql_dict = db.cursor(pymysql.cursors.DictCursor)
+
+                        # DB execute
+                        sql_insert = 'delete from chatbot.user_info WHERE id in (%s)'  # SQL
+                        sql_dict.execute(sql_insert, id)
+                        db.commit()
+                        db.close()
 
                     elif msg['text'] == '!최근글': # 최근글
-                        pass
+                        url = 'http://ice.yu.ac.kr/rssList.jsp?siteId=ice&boardId=2559904'
+                        feed = feedparser.parse(url)
+
                     else:
                         bot.sendMessage(id, '무슨 말인지 모르겠어요')
                         print('unknown message')
