@@ -2,6 +2,7 @@ import telepot
 import param
 import time
 import feedparser
+import requests
 from database import *
 
 bot = telepot.Bot(param.token)  # 봇 초기화
@@ -28,6 +29,14 @@ def Message(msg):
                     database('delete', id)
 
                 elif msg['text'] == '!최근글':  # 최근글
+                    headers = {
+                        "User-Agent": "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/33.0.1750",
+                        'Content-Type': 'application/json', "Cookie": ""}
+                    response = requests.get(param.url, headers=headers)
+
+                    with open('rssList.xml', 'wb') as file:
+                        file.write(response.content)
+
                     feed = feedparser.parse('rssList.xml')
                     bot.sendMessage(id, feed['entries'][0]['title'])
                     bot.sendMessage(id, feed['entries'][0]['link'])
