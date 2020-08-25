@@ -4,17 +4,17 @@ import time
 import feedparser
 import requests
 from database import *
+from crawling import *
 
 bot = telepot.Bot(param.token)  # 봇 초기화
-
 
 def Message(msg):
     defaultMsg = "공지사항 알리미 입니다.\n공지사항에 새로운글이 업로드되면 알림이 전송됩니다!"  # default message
     content, chat, id = telepot.glance(msg)  # 메시지를 수신하면 내용, chat, id로 반환
 
-    if database('check', id) is False:  # 사용자 정보가 등록되지 않은 경우
+    if database('check', id=id) is False:  # 사용자 정보가 등록되지 않은 경우
         if msg['text'] == '!등록':  # 등록
-            database('register', id)
+            database('register', id=id)
         else:
             bot.sendMessage(id, '등록되지 않았습니다.\n알림을 수신하려면 !등록 명령어를 먼저 입력해주세요!')
             bot.sendMessage(id, defaultMsg)
@@ -26,20 +26,16 @@ def Message(msg):
 
             try:
                 if msg['text'] == '!삭제':  # 삭제
-                    database('delete', id)
+                    database('delete', id=id)
 
                 elif msg['text'] == '!최근글':  # 최근글
-                    headers = {
-                        "User-Agent": "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/33.0.1750",
-                        'Content-Type': 'application/json', "Cookie": ""}
-                    response = requests.get(param.url, headers=headers)
-
-                    with open('rssList.xml', 'wb') as file:
-                        file.write(response.content)
-
+                    # WEB crawling
+                    crawling()
                     feed = feedparser.parse('rssList.xml')
-                    bot.sendMessage(id, feed['entries'][0]['title'])
-                    bot.sendMessage(id, feed['entries'][0]['link'])
+
+                    for i in range(param.message_num):
+                        bot.sendMessage(id, feed['entries'][i]['title'])
+                        bot.sendMessage(id, feed['entries'][i]['link'])
 
                 else:
                     bot.sendMessage(id, '무슨 말인지 모르겠어요')
