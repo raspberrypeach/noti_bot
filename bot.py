@@ -11,7 +11,7 @@ bot = telepot.Bot(param.token)  # 봇 초기화
 
 def Message(msg):
     defaultMsg = "정보통신공학과 공지사항 알림봇 입니다.\n공지사항에 새로운글이 업로드되면 알림이 전송됩니다!"  # default message
-    helpmsg = "!종료: 알림종료\n!최근글: 최근에 등록된 게시글(2개)"
+    helpmsg = "!등록: 알림시작\n!종료: 알림종료\n!최근글: 최근에 등록된 게시글(2개)"
     content, chat, id = telepot.glance(msg)  # 메시지를 수신하면 내용, chat, id로 반환
 
     try:
