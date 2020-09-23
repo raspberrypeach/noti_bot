@@ -1,12 +1,10 @@
 import telepot
 import param
 import time
-import feedparser
-import requests
 from database import *
 from crawling import *
 
-bot = telepot.Bot(param.token)  # 봇 초기화
+bot = telepot.Bot(param.token)  # initialize bot
 
 
 def Message(msg):
